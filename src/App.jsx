@@ -3,13 +3,14 @@ import Options from "./components/Options/Options";
 import Feedback from "./components/Feedback/Feedback";
 import { useEffect, useState } from "react";
 import Notification from "./components/Notification/Notification";
+import Description from "./components/Description/Description";
 
 const App = () => {
   const [feedBack, setFeedback] = useState(() => {
     const savedFeedBack = localStorage.getItem("feedBack");
     return savedFeedBack
       ? JSON.parse(savedFeedBack)
-      : { Good: 0, Neutral: 0, Bad: 0, Total: 0, Positive: 0 };
+      : { good: 0, neutral: 0, bad: 0 };
   });
 
   useEffect(() => {
@@ -23,33 +24,25 @@ const App = () => {
     }));
   };
 
-  const totalFeedback = () => {
-    return feedBack.Good + feedBack.Neutral + feedBack.Bad;
-  };
+  const totalFeedback = feedBack.bad + feedBack.good + feedBack.neutral;
 
-  const totalPositive = () => {
-    const total = totalFeedback();
-
-    return total ? Math.round((feedBack.Good / total) * 100) : 0;
-  };
+  const totalPositive = totalFeedback
+    ? Math.round((feedBack.good / totalFeedback) * 100)
+    : 0;
 
   const handleReset = () => {
-    setFeedback({ Good: 0, Neutral: 0, Bad: 0, Total: 0, Positive: 0 });
+    setFeedback({ good: 0, neutral: 0, bad: 0 });
   };
 
   return (
     <div className={s.container}>
-      <h1 className={s.title}>Sip Happens Café</h1>
-      <p className={s.paragraph}>
-        Please leave your feedback about our service by selecting one of the
-        options below.
-      </p>
+      <Description />
       <Options
         handleClickByOption={handleClickByOption}
         handleReset={handleReset}
         totalFeedback={totalFeedback}
       />
-      {totalFeedback() > 0 ? (
+      {totalFeedback > 0 ? (
         <Feedback
           feedBack={feedBack}
           totalFeedback={totalFeedback}
